@@ -73,7 +73,7 @@ router.put("/:id/follow", async (req, res) => {
 
       if (!user.followers.includes(req.body.userId)) {
         await user.updateOne({ $push: { followers: req.body.userId } });
-        await currentuser.updateOne({ $push: { following: req.body.userId } });
+        await currentuser.updateOne({ $push: { following: req.params.id } });
         res.status(200).json({ msg: "User has been followed" });
       } else {
         res.status(400).json({ error: "You already follow this user" });
@@ -84,6 +84,29 @@ router.put("/:id/follow", async (req, res) => {
     }
   } else {
     res.status(400).json({ error: "You con't follow your self" });
+  }
+});
+
+// Unfollow User
+router.put("/:id/unfollow", async (req, res) => {
+  if (req.body.userId !== req.params.id) {
+    try {
+      const user = await User.findById(req.params.id);
+      const currentuser = await User.findById(req.body.userId);
+
+      if (user.followers.includes(req.body.userId)) {
+        await user.updateOne({ $pull: { followers: req.body.userId } });
+        await currentuser.updateOne({ $pull: { following: req.params.id } });
+        res.status(200).json({ msg: "User has been unfollowed" });
+      } else {
+        res.status(400).json({ error: "You don't follow this user" });
+      }
+    } catch (err) {
+        console.log(err);
+        res.status(400).json({ error: "Server Error" });
+    }
+  } else {
+    res.status(400).json({ error: "You con't unfollow your self" });
   }
 });
 

@@ -5,6 +5,7 @@ import morgan from "morgan";
 import config from "./config/config.js";
 import userRouter from './routes/users.js'
 import authRouter from './routes/auth.js'
+import postRouter from './routes/posts.js'
 
 const app = express();
 
@@ -17,7 +18,8 @@ app.get("/", (req,res)=>{
 })
 
 app.use('/api/users', userRouter);
-app.use('/api/auth' , authRouter)
+app.use('/api/auth' , authRouter);
+app.use('/api/posts', postRouter)
 
 app.listen(config.Port, () => {
   console.log("Server Running " + config.Port);
